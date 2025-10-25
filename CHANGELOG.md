@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/BlueConfetti/lumarr/compare/v0.1.0...v0.2.0) (2025-10-25)
+
+
+### Features
+
+* add auto-merge for release PRs ([edae5d6](https://github.com/BlueConfetti/lumarr/commit/edae5d686027cfee7163f47ce3d9e0ba7ad46fc3))
+* add manual workflow dispatch to publish workflow ([433fbac](https://github.com/BlueConfetti/lumarr/commit/433fbacff1b8529ebb5930179518b175d9bcc62a))
+
 ## 0.1.0 (2025-10-25)
 
 
