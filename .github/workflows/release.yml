@@ -30,6 +30,8 @@ jobs:
     needs: release-please
     if: needs.release-please.outputs.release_created == 'true'
     steps:
+      - uses: actions/checkout@v4
+
       - name: Trigger publish workflow
         run: gh workflow run publish.yml -f tag=${{ needs.release-please.outputs.tag_name }}
         env:
