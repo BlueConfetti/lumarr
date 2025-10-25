@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/BlueConfetti/lumarr/compare/v0.3.0...v0.4.0) (2025-10-25)
+
+
+### Features
+
+* use PAT for release-please to enable auto-merge workflow ([7f91e0c](https://github.com/BlueConfetti/lumarr/commit/7f91e0c21243955d031bd7cedf97b188bec400f2))
+
+
+### Bug Fixes
+
+* add checkout step to trigger-publish job ([41976d3](https://github.com/BlueConfetti/lumarr/commit/41976d372e1e0680118e2019c17a54156f65c65b))
+
 ## [0.3.0](https://github.com/BlueConfetti/lumarr/compare/v0.2.0...v0.3.0) (2025-10-25)
 
 
