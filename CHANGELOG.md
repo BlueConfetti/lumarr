@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/BlueConfetti/lumarr/compare/v0.2.0...v0.3.0) (2025-10-25)
+
+
+### Features
+
+* auto-trigger publish workflow after release creation ([c874330](https://github.com/BlueConfetti/lumarr/commit/c874330dd744f3b93e595521e8ae5dda6106376a))
+
+
+### Documentation
+
+* docker pypi related info ([91dbaa1](https://github.com/BlueConfetti/lumarr/commit/91dbaa18d82d1ffd61dc426edad7f55bb480f6c0))
+
 ## [0.2.0](https://github.com/BlueConfetti/lumarr/compare/v0.1.0...v0.2.0) (2025-10-25)
 
 
