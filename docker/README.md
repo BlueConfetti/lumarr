@@ -2,6 +2,8 @@
 
 This directory contains Docker configuration files for containerizing the lumarr application.
 
+**Note:** Official multi-architecture images are available on Docker Hub at `blueconfetti/lumarr` for both linux/amd64 and linux/arm64 platforms.
+
 ## Contents
 
 - `Dockerfile` - Multi-stage Docker build for lumarr
@@ -40,9 +42,9 @@ docker-compose run --rm lumarr sync -c /config/config.yaml
 
 ### Using Docker Directly
 
-1. Build the image:
+1. Pull the official image:
 ```bash
-docker build -t lumarr -f docker/Dockerfile .
+docker pull blueconfetti/lumarr:latest
 ```
 
 2. Create directories for config and data:
@@ -55,7 +57,7 @@ mkdir -p docker/config docker/data
 docker run --rm \
   -v $(pwd)/docker/config:/config \
   -v $(pwd)/docker/data:/data \
-  lumarr sync -c /config/config.yaml
+  blueconfetti/lumarr sync -c /config/config.yaml
 ```
 
 ## Volume Mounts
@@ -78,7 +80,7 @@ The container expects two volume mounts:
 docker run --rm \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr sync -c /config/config.yaml
+  blueconfetti/lumarr sync -c /config/config.yaml
 ```
 
 ### Follow mode (continuous monitoring)
@@ -86,7 +88,7 @@ docker run --rm \
 docker run --rm \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr sync -c /config/config.yaml --follow
+  blueconfetti/lumarr sync -c /config/config.yaml --follow
 ```
 
 ### List Letterboxd movies
@@ -94,7 +96,7 @@ docker run --rm \
 docker run --rm \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr lbox list -c /config/config.yaml
+  blueconfetti/lumarr lbox list -c /config/config.yaml
 ```
 
 ### Check status
@@ -102,7 +104,7 @@ docker run --rm \
 docker run --rm \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr status -c /config/config.yaml
+  blueconfetti/lumarr status -c /config/config.yaml
 ```
 
 ### View history
@@ -110,7 +112,7 @@ docker run --rm \
 docker run --rm \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr history -c /config/config.yaml
+  blueconfetti/lumarr history -c /config/config.yaml
 ```
 
 ### Dry run mode
@@ -118,7 +120,7 @@ docker run --rm \
 docker run --rm \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr sync -c /config/config.yaml --dry-run
+  blueconfetti/lumarr sync -c /config/config.yaml --dry-run
 ```
 
 ## Scheduled Syncs
@@ -142,7 +144,7 @@ This continuously checks your watchlist at configured intervals (default: Plex e
 ### Option 2: Cron on host
 Add to your crontab for periodic syncs:
 ```bash
-0 */6 * * * docker run --rm -v /path/to/config:/config -v /path/to/data:/data lumarr sync -c /config/config.yaml
+0 */6 * * * docker run --rm -v /path/to/config:/config -v /path/to/data:/data blueconfetti/lumarr sync -c /config/config.yaml
 ```
 
 ### Option 3: Kubernetes CronJob

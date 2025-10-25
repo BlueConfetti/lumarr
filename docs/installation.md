@@ -11,9 +11,39 @@ This guide covers different methods for installing Lumarr.
 
 ## Installation Methods
 
-### Method 1: Using uv (Recommended)
+### Method 1: Using pip (Recommended)
 
-[uv](https://github.com/astral-sh/uv) is a fast Python package installer and resolver written in Rust. It's the recommended way to install Lumarr.
+The simplest way to install Lumarr is via PyPI:
+
+```bash
+pip install lumarr
+```
+
+This installs the latest stable release and all dependencies.
+
+**Benefits:**
+- Simplest installation method
+- Official releases from PyPI
+- Automatic dependency management
+- Available system-wide
+
+### Method 2: Docker (Recommended for Production)
+
+Docker provides an isolated environment and is recommended for production deployments. Official multi-architecture images are available on Docker Hub.
+
+```bash
+docker pull blueconfetti/lumarr:latest
+```
+
+**Supported architectures:**
+- linux/amd64
+- linux/arm64 (Raspberry Pi, Apple Silicon, etc.)
+
+See [Docker Guide](docker.md) for detailed instructions.
+
+### Method 3: Using uv (For Development)
+
+[uv](https://github.com/astral-sh/uv) is a fast Python package installer and resolver written in Rust.
 
 **Install uv (if not already installed):**
 
@@ -35,11 +65,11 @@ uv pip install -e .
 **Benefits:**
 - Extremely fast dependency resolution
 - Better dependency management
-- Compatible with all Python package managers
+- Ideal for development
 
-### Method 2: Using pip
+### Method 4: Using pip from Source
 
-Standard Python package installation:
+Standard Python package installation from source:
 
 ```bash
 # Clone the repository
@@ -50,15 +80,7 @@ cd lumarr
 pip install -e .
 ```
 
-### Method 3: Docker (Recommended for Production)
-
-Docker provides an isolated environment and is recommended for production deployments. See [Docker Guide](docker.md) for detailed instructions.
-
-```bash
-docker pull lumarr/lumarr:latest
-```
-
-### Method 4: From Source (Development)
+### Method 5: From Source (Development)
 
 For development or customization:
 
@@ -117,7 +139,19 @@ See the [Configuration Guide](configuration.md) for detailed setup instructions 
 
 ## Updating Lumarr
 
-### With uv:
+### With pip (from PyPI):
+
+```bash
+pip install --upgrade lumarr
+```
+
+### With Docker:
+
+```bash
+docker pull blueconfetti/lumarr:latest
+```
+
+### From source (with uv):
 
 ```bash
 cd lumarr
@@ -125,18 +159,12 @@ git pull
 uv pip install -e .
 ```
 
-### With pip:
+### From source (with pip):
 
 ```bash
 cd lumarr
 git pull
 pip install -e . --upgrade
-```
-
-### With Docker:
-
-```bash
-docker pull lumarr/lumarr:latest
 ```
 
 ## Uninstalling
@@ -150,7 +178,7 @@ pip uninstall lumarr
 ### With Docker:
 
 ```bash
-docker rmi lumarr/lumarr
+docker rmi blueconfetti/lumarr
 ```
 
 ## Troubleshooting Installation

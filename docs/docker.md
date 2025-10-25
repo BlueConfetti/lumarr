@@ -2,6 +2,8 @@
 
 This guide covers running Lumarr in Docker, including Docker Compose setup and deployment strategies.
 
+Official multi-architecture Docker images are available on Docker Hub at `blueconfetti/lumarr` for both linux/amd64 and linux/arm64 platforms.
+
 ## Quick Start
 
 ### Using Docker Compose (Recommended)
@@ -34,9 +36,9 @@ This guide covers running Lumarr in Docker, including Docker Compose setup and d
 
 ### Using Docker Directly
 
-1. **Build the image:**
+1. **Pull the official image:**
    ```bash
-   docker build -t lumarr -f docker/Dockerfile .
+   docker pull blueconfetti/lumarr:latest
    ```
 
 2. **Create directories:**
@@ -49,7 +51,7 @@ This guide covers running Lumarr in Docker, including Docker Compose setup and d
    docker run --rm \
      -v $(pwd)/docker/config:/config \
      -v $(pwd)/docker/data:/data \
-     lumarr sync -c /config/config.yaml
+     blueconfetti/lumarr sync -c /config/config.yaml
    ```
 
 ## Container Configuration
@@ -66,7 +68,7 @@ The container expects two volume mounts:
 docker run --rm \
   -v /path/to/config:/config \
   -v /path/to/data:/data \
-  lumarr sync -c /config/config.yaml
+  blueconfetti/lumarr sync -c /config/config.yaml
 ```
 
 ### Environment Variables
@@ -92,7 +94,7 @@ environment:
 docker run --rm \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr sync -c /config/config.yaml
+  blueconfetti/lumarr sync -c /config/config.yaml
 ```
 
 ### Dry Run Mode
@@ -103,7 +105,7 @@ Preview changes without making them:
 docker run --rm \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr sync -c /config/config.yaml --dry-run
+  blueconfetti/lumarr sync -c /config/config.yaml --dry-run
 ```
 
 ### Follow Mode (Continuous Monitoring)
@@ -114,7 +116,7 @@ Run Lumarr continuously to monitor for new watchlist items:
 docker run --rm \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr sync -c /config/config.yaml --follow
+  blueconfetti/lumarr sync -c /config/config.yaml --follow
 ```
 
 ### View Status
@@ -123,7 +125,7 @@ docker run --rm \
 docker run --rm \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr status -c /config/config.yaml
+  blueconfetti/lumarr status -c /config/config.yaml
 ```
 
 ### View History
@@ -132,7 +134,7 @@ docker run --rm \
 docker run --rm \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr history -c /config/config.yaml
+  blueconfetti/lumarr history -c /config/config.yaml
 ```
 
 ### List Letterboxd Movies
@@ -141,7 +143,7 @@ docker run --rm \
 docker run --rm \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr lbox list -c /config/config.yaml
+  blueconfetti/lumarr lbox list -c /config/config.yaml
 ```
 
 ## Deployment Strategies
@@ -254,7 +256,7 @@ If Sonarr/Radarr are running on the same host:
 docker run --network host \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr sync -c /config/config.yaml
+  blueconfetti/lumarr sync -c /config/config.yaml
 ```
 
 Or in docker-compose.yml:
@@ -275,7 +277,7 @@ docker network create media
 docker run --network media \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr sync -c /config/config.yaml
+  blueconfetti/lumarr sync -c /config/config.yaml
 ```
 
 Or in docker-compose.yml:
@@ -313,6 +315,8 @@ chmod 600 config/config.yaml
 
 ## Building
 
+**Note:** Official multi-architecture images are automatically built and published to Docker Hub via CI/CD. Building from source is typically only needed for development or testing custom changes.
+
 ### Build from Source
 
 ```bash
@@ -328,9 +332,11 @@ Build for different architectures using buildx:
 # Build for ARM (e.g., Raspberry Pi)
 docker buildx build --platform linux/arm64 -t lumarr:arm64 -f docker/Dockerfile .
 
-# Build for multiple platforms
+# Build for multiple platforms (like official releases)
 docker buildx build --platform linux/amd64,linux/arm64 -t lumarr:latest -f docker/Dockerfile .
 ```
+
+Official images on Docker Hub (`blueconfetti/lumarr`) support both linux/amd64 and linux/arm64 platforms automatically.
 
 ## Troubleshooting
 
@@ -361,7 +367,7 @@ Ensure only one instance of Lumarr is running at a time:
 docker ps | grep lumarr
 
 # Stop all lumarr containers
-docker stop $(docker ps -q --filter ancestor=lumarr)
+docker stop $(docker ps -q --filter ancestor=blueconfetti/lumarr)
 ```
 
 ### Container Exits Immediately
@@ -387,7 +393,7 @@ docker run --rm \
   -e PYTHONUNBUFFERED=1 \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  lumarr sync -c /config/config.yaml --follow
+  blueconfetti/lumarr sync -c /config/config.yaml --follow
 ```
 
 ## Monitoring

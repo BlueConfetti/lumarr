@@ -3,6 +3,8 @@
 A lightweight CLI tool to automatically sync your Plex watchlist and Letterboxd lists with Sonarr and Radarr.
 
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
+[![PyPI version](https://img.shields.io/pypi/v/lumarr.svg)](https://pypi.org/project/lumarr/)
+[![Docker Hub](https://img.shields.io/docker/v/blueconfetti/lumarr?label=docker)](https://hub.docker.com/r/blueconfetti/lumarr)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ## Overview
@@ -23,7 +25,19 @@ Lumarr monitors your Plex watchlist and Letterboxd activity, automatically addin
 
 ### Installation
 
-**Using uv (Recommended):**
+**Using pip (Recommended):**
+
+```bash
+pip install lumarr
+```
+
+**Using Docker:**
+
+```bash
+docker pull blueconfetti/lumarr:latest
+```
+
+**From Source:**
 
 ```bash
 # Install uv
@@ -33,12 +47,6 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 git clone https://github.com/yourusername/lumarr.git
 cd lumarr
 uv pip install -e .
-```
-
-**Using Docker:**
-
-```bash
-docker pull lumarr/lumarr:latest
 ```
 
 See [Installation Guide](docs/installation.md) for more installation options.
@@ -174,5 +182,6 @@ This project was inspired by [Ombi](https://github.com/Ombi-app/Ombi)'s watchlis
 ## Support
 
 - [Documentation](docs/)
-- [GitHub Issues](https://github.com/yourusername/lumarr/issues)
+- [PyPI Package](https://pypi.org/project/lumarr/)
+- [Docker Hub](https://hub.docker.com/r/blueconfetti/lumarr)
 - [Configuration Examples](config.example.yaml)
