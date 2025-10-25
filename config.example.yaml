@@ -1,0 +1,122 @@
+# Plex Configuration
+plex:
+  # Your Plex authentication token
+  # Get this from: https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/
+  token: "YOUR_PLEX_TOKEN"
+
+  # Unique identifier for this application (can be any UUID)
+  client_identifier: "lumarr-sync"
+
+  # Optional: RSS feed ID for watchlist (alternative to API)
+  # Get your RSS feed URL from Plex and extract the UUID
+  # Example: https://rss.plex.tv/13215c36-af9c-4ff3-8414-cfdb395e70ee
+  # Use just the UUID part: 13215c36-af9c-4ff3-8414-cfdb395e70ee
+  # RSS is faster and avoids rate limits but requires the URL to be accessible
+  rss_id: ""
+
+  # Seconds between Plex watchlist checks in follow mode (default: 5)
+  sync_interval: 5
+
+# Letterboxd Configuration
+letterboxd:
+  # List of Letterboxd RSS usernames to sync watched movies from
+  # Example:
+  # rss:
+  #   - username1
+  #   - username2
+  # Each user's RSS feed will be fetched from https://letterboxd.com/{username}/rss/
+  rss: []
+
+  # Users whose Letterboxd watchlists should be scraped (all pages)
+  # Example:
+  # watchlist:
+  #   - username1
+  #   - username2
+  watchlist: []
+
+  # Minimum rating filter for Letterboxd movies (0.0-5.0)
+  # Only movies rated at or above this value will be synced
+  # Leave empty or set to 0 to sync all movies regardless of rating
+  min_rating: 0
+
+  # Seconds between Letterboxd checks in follow mode (default: 30)
+  # Letterboxd scraping is slower, so a longer interval is recommended
+  sync_interval: 30
+
+# Sonarr Configuration
+sonarr:
+  # Enable Sonarr integration
+  enabled: true
+
+  # Sonarr URL (include http:// or https://)
+  url: "http://localhost:8989"
+
+  # Sonarr API key
+  api_key: "YOUR_SONARR_API_KEY"
+
+  # Default quality profile ID (get from Sonarr settings)
+  quality_profile: 1
+
+  # Default root folder path
+  root_folder: "/tv"
+
+  # Monitor all seasons or just latest
+  monitor_all: false
+
+  # Series type: standard, daily, or anime
+  series_type: "standard"
+
+  # Season folder
+  season_folder: true
+
+# Radarr Configuration
+radarr:
+  # Enable Radarr integration
+  enabled: true
+
+  # Radarr URL (include http:// or https://)
+  url: "http://localhost:7878"
+
+  # Radarr API key
+  api_key: "YOUR_RADARR_API_KEY"
+
+  # Default quality profile ID (get from Radarr settings)
+  quality_profile: 1
+
+  # Default root folder path
+  root_folder: "/movies"
+
+  # Monitor movie
+  monitored: true
+
+  # Search for movie immediately
+  search_on_add: true
+
+# TMDB Configuration (for ID lookups)
+tmdb:
+  # TMDB API key (optional but recommended for better ID resolution)
+  # Get from: https://www.themoviedb.org/settings/api
+  api_key: ""
+
+# Sync Settings
+sync:
+  # Path to SQLite database for tracking synced items
+  database: "./lumarr.db"
+
+  # Dry run mode (preview changes without making them)
+  dry_run: false
+
+  # Ignore existing watchlist items (only sync new additions)
+  # When true, items already in the watchlist at first run will be marked as baseline
+  # and only newly added items will be synced
+  ignore_existing: false
+
+  # Metadata cache max age in days (default: 7)
+  # Cached metadata older than this will be refreshed
+  cache_max_age_days: 7
+
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  log_level: "INFO"
+
+  # Log file path (empty for stdout only)
+  log_file: ""

@@ -1,0 +1,36 @@
+services:
+  lumarr:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: lumarr
+    restart: unless-stopped
+
+    # Volume mounts for persistent config and database
+    volumes:
+      - ./config:/config
+      - ./data:/data
+
+    # Environment variables (optional overrides)
+    environment:
+      - CONFIG_PATH=/config/config.yaml
+      - DB_PATH=/data/lumarr.db
+      - TZ=America/Los_Angeles  # Set your timezone
+
+    # Network mode to access local services (Sonarr/Radarr)
+    # Use 'host' if Sonarr/Radarr are running on the same host
+    # Or use a custom network if they're in other containers
+    network_mode: bridge
+
+    # Command to run
+    # Default is --help for testing; replace with actual command for production
+    # Recommended: Use follow mode for continuous monitoring
+    # command: ["sync", "-c", "/config/config.yaml", "--follow"]
+    # One-time sync:
+    # command: ["sync", "-c", "/config/config.yaml"]
+    command: ["--help"]
+
+# Optional: Custom network for connecting to other containers
+# networks:
+#   media:
+#     external: true
