@@ -185,3 +185,4 @@ This project was inspired by [Ombi](https://github.com/Ombi-app/Ombi)'s watchlis
 - [PyPI Package](https://pypi.org/project/lumarr/)
 - [Docker Hub](https://hub.docker.com/r/blueconfetti/lumarr)
 - [Configuration Examples](config.example.yaml)
+# Test auto-merge Sat Oct 25 14:50:12 PDT 2025
