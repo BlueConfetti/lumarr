@@ -18,7 +18,8 @@ Lumarr monitors your Plex watchlist and Letterboxd activity, automatically addin
 - **Smart Duplicate Prevention** - Local database tracks synced items
 - **Multiple Sync Modes** - One-time, scheduled, or continuous monitoring
 - **Interactive Configuration** - Easy setup wizard for first-time configuration
-- **Rich CLI** - Beautiful terminal output with detailed status information
+- **Modular CLI Toolkit** - Commands for status checks, history browsing, listing, and service discovery
+- **Event Hooks** - Trigger shell commands or webhooks on sync completion or errors
 - **Docker Support** - Run in a container for easy deployment
 
 ## Quick Start
@@ -73,14 +74,24 @@ See [Configuration Guide](docs/configuration.md) for detailed configuration opti
 # Test connections
 lumarr status
 
+# Inspect current watchlist and Letterboxd inputs
+lumarr list
+lumarr list letterboxd --detailed
+
 # Preview sync (dry run)
 lumarr sync --dry-run
 
-# Sync once
+# Sync once or monitor continuously
 lumarr sync
-
-# Continuous monitoring (recommended)
 lumarr sync --follow
+
+# Review sync history or clear it when needed
+lumarr history
+lumarr clear
+
+# Discover service configuration details
+lumarr sonarr info
+lumarr radarr info
 ```
 
 See [CLI Reference](docs/cli-reference.md) for all available commands.
@@ -155,16 +166,22 @@ WantedBy=multi-user.target
 ```
 lumarr/
 ├── src/lumarr/
-│   ├── api/             # API clients (Plex, Sonarr, Radarr, TMDB, Letterboxd)
-│   ├── cli.py           # CLI interface
-│   ├── config.py        # Configuration management
-│   ├── db.py            # SQLite database operations
-│   ├── models.py        # Data models
-│   └── sync.py          # Sync orchestration
-├── docker/              # Docker configuration
-├── docs/                # Documentation
-├── config.yaml          # Your configuration
-└── lumarr.db           # SQLite database (auto-created)
+│   ├── api/                 # API clients (Plex, Sonarr, Radarr, TMDB, Letterboxd)
+│   ├── cli/                 # Modular Click-based CLI implementation
+│   │   ├── __init__.py      # CLI entrypoint and shared options
+│   │   ├── commands/        # Command implementations (sync, list, status, etc.)
+│   │   ├── groups/          # Command groups for Radarr/Sonarr helpers
+│   │   ├── core/            # Context handling, decorators, hooks, plugin loader
+│   │   ├── display/         # Rich console helpers and table formatters
+│   │   └── logic/           # CLI workflows (follow mode, baseline, sync helpers)
+│   ├── config.py            # Configuration management
+│   ├── db.py                # SQLite database operations
+│   ├── models.py            # Data models
+│   └── sync.py              # Sync orchestration
+├── docker/                  # Docker configuration
+├── docs/                    # Documentation
+├── config.yaml              # Your configuration
+└── lumarr.db               # SQLite database (auto-created)
 ```
 
 ## Contributing
@@ -185,7 +202,3 @@ This project was inspired by [Ombi](https://github.com/Ombi-app/Ombi)'s watchlis
 - [PyPI Package](https://pypi.org/project/lumarr/)
 - [Docker Hub](https://hub.docker.com/r/blueconfetti/lumarr)
 - [Configuration Examples](config.example.yaml)
-# Test auto-merge Sat Oct 25 14:50:12 PDT 2025
-# Testing
-# Final test Mon Oct 27 07:54:07 PDT 2025
-# Auto-merge victory! Mon Oct 27 07:56:14 PDT 2025

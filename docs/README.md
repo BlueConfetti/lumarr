@@ -65,7 +65,8 @@ Running Lumarr in Docker containers:
 - [RSS vs API mode for Plex](configuration.md#rss-feed-alternative-recommended)
 - [Follow mode for continuous monitoring](cli-reference.md#lumarr-sync)
 - [Ignore existing watchlist items](configuration.md#ignore_existing-option)
-- [Filter Letterboxd by rating](cli-reference.md#filtering-letterboxd-by-rating)
+- [Configure event hooks](configuration.md#hooks-optional)
+- [Filter Letterboxd by rating](cli-reference.md#lumarr-list-letterboxd)
 - [Docker deployment strategies](docker.md#deployment-strategies)
 - [Systemd service setup](cli-reference.md#option-1-follow-mode-recommended)
 
@@ -75,13 +76,14 @@ Lumarr is organized into several modules:
 
 ```
 src/lumarr/
-├── api/                 # API clients
-│   ├── plex.py         # Plex API/RSS client
-│   ├── sonarr.py       # Sonarr API client
-│   ├── radarr.py       # Radarr API client
-│   ├── tmdb.py         # TMDB API client
-│   └── letterboxd.py   # Letterboxd scraper
-├── cli.py              # Click-based CLI interface
+├── api/                 # API clients (Plex, Sonarr, Radarr, TMDB, Letterboxd)
+├── cli/                 # Modular CLI package
+│   ├── __init__.py      # Entry point and shared options
+│   ├── commands/        # Command implementations (sync, list, status, etc.)
+│   ├── groups/          # Command groups for Radarr/Sonarr helpers
+│   ├── core/            # Context, decorators, hooks, plugin loader
+│   ├── display/         # Rich console helpers
+│   └── logic/           # CLI-specific workflows (follow mode, baseline)
 ├── config.py           # Configuration management
 ├── config_wizard.py    # Interactive setup wizard
 ├── db.py               # SQLite database operations

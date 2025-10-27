@@ -7,6 +7,7 @@ Complete reference for all Lumarr commands and options.
 Available for all commands:
 
 - `--config`, `-c`: Path to config file (default: `config.yaml`)
+- `--db`: Path to database file (default resolved from config or `./lumarr.db`)
 - `--version`: Show version
 - `--help`: Show help message
 
@@ -73,28 +74,51 @@ Displays:
 
 ### lumarr list
 
-Display all items in your Plex watchlist with detailed information.
+Inspect your Plex watchlist and configured Letterboxd sources without making changes.
 
 ```bash
-# Show table view with basic info
+# Show combined Plex + Letterboxd overview
 lumarr list
 
-# Show detailed view with summaries and all metadata
-lumarr list --detailed
+# Focus on a specific source
+lumarr list plex --detailed
+lumarr list letterboxd --rss user1 --watchlist user2 --min-rating 4 --detailed
+```
+
+Running `lumarr list` without a subcommand prints a Plex section followed by Letterboxd results (if configured). Use the subcommands below to target a single source or customize the output.
+
+#### Plex subcommand
+
+List items from your Plex watchlist.
+
+```bash
+lumarr list plex [--detailed] [--force-refresh]
 ```
 
 **Options:**
 
-- `--detailed`, `-d`: Show detailed view with summaries and all metadata
-- `--force-refresh`: Force refresh metadata cache
+- `--detailed`, `-d`: Show extended metadata including provider IDs, summary, genres, and studio
+- `--force-refresh`: Bypass cached metadata and fetch fresh details from Plex
 
-**Displayed information:**
-- Title, type (movie/show), year
-- Content rating (PG, R, TV-MA, etc.)
-- Genres
-- Provider IDs (TMDB, TVDB, IMDB)
-- Summary/description (in detailed mode)
-- Studio information (in detailed mode)
+The summary table always includes title, year, and media type. Detailed mode adds provider IDs and truncated summaries for quick inspection.
+
+#### Letterboxd subcommand
+
+List movies sourced from Letterboxd RSS feeds or watchlists.
+
+```bash
+lumarr list letterboxd
+lumarr list letterboxd --rss alice --watchlist bob --min-rating 3.5 --detailed
+```
+
+**Options:**
+
+- `--rss`, `-r`: Letterboxd username(s) whose RSS feeds should be read (multiple allowed)
+- `--watchlist`, `-w`: Letterboxd username(s) whose watchlists should be scraped (multiple allowed)
+- `--min-rating`: Only include movies rated at or above the given value (0.0–5.0)
+- `--detailed`, `-d`: Show ratings, TMDB IDs, and summaries in addition to the table view
+
+If no CLI usernames are provided, Lumarr falls back to the `letterboxd.rss` and `letterboxd.watchlist` settings from `config.yaml`. Watchlist entries reuse the embedded `data-film-id` as the TMDB identifier and do not include ratings, so the `--min-rating` filter only affects RSS-derived items.
 
 ### lumarr history
 
@@ -167,39 +191,20 @@ lumarr radarr info --url http://localhost:7878 --api-key YOUR_API_KEY
 - Root Folder paths and available space (for `root_folder` setting)
 - Available tags
 
-### lumarr lbox list
+### lumarr list letterboxd
 
-List watched movies from Letterboxd. This command is for viewing items only; syncing is done via `lumarr sync`.
+Alias for the Letterboxd subcommand documented above. Use it when you only care about Letterboxd output and do not want the Plex section.
 
 ```bash
-# Using usernames from config.yaml
-lumarr lbox list
-
-# Override with command-line arguments
-lumarr lbox list --rss username1 --rss username2
-
-# Scrape watchlists instead of RSS
-lumarr lbox list --watchlist username1 --watchlist username2
-
-# Require minimum star rating
-lumarr lbox list --min-rating 4
-
-# Show detailed view with ratings
-lumarr lbox list --detailed
+lumarr list letterboxd --rss username1 --watchlist username2 --min-rating 3.5 --detailed
 ```
 
-**Options:**
+Arguments and behaviour match the [Letterboxd list subcommand](#letterboxd-subcommand):
 
-- `--rss`, `-r`: Letterboxd username(s) for RSS feeds (can specify multiple times, overrides config)
-- `--watchlist`, `-w`: Letterboxd username(s) whose watchlists should be scraped (can specify multiple times, overrides config)
-- `--min-rating`: Only include movies with this rating or higher (0.0-5.0)
-- `--detailed`, `-d`: Show detailed view with ratings and summaries
-
-**How it works:**
-- Fetches RSS feeds from Letterboxd for watched entries
-- Scrapes watchlist pages (all pages) for configured usernames
-- Extracts movie title, year, rating (if available), and uses provided IDs (TMDB when present)
-- **Note:** Watchlist items do not include ratings, so `--min-rating` filters only apply to RSS-sourced entries
+- Supports multiple `--rss/-r` and `--watchlist/-w` values
+- Respects `letterboxd.rss` and `letterboxd.watchlist` from `config.yaml` when you omit CLI flags
+- Reuses `data-film-id` from Letterboxd watchlists as the TMDB identifier without extra network calls
+- Applies rating filters only to RSS-sourced entries because watchlists do not contain ratings
 
 ## Examples
 
@@ -247,7 +252,7 @@ lumarr sync
 lumarr sync --min-rating 4
 
 # List Letterboxd movies rated 3.5 or higher
-lumarr lbox list --min-rating 3.5 --detailed
+lumarr list letterboxd --min-rating 3.5 --detailed
 ```
 
 **Discovering Sonarr/Radarr settings:**

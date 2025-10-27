@@ -1,3 +1,7 @@
+# Configuration file for lumarr
+# This file path can be set via --config flag or LUMARR_CONFIG environment variable
+# Database path can be set via --db flag or LUMARR_DB environment variable
+
 # Plex Configuration
 plex:
   # Your Plex authentication token
@@ -101,6 +105,8 @@ tmdb:
 # Sync Settings
 sync:
   # Path to SQLite database for tracking synced items
+  # Can also be set via --db flag or LUMARR_DB environment variable
+  # Priority: CLI flag > env var > config file > default (./lumarr.db)
   database: "./lumarr.db"
 
   # Dry run mode (preview changes without making them)

@@ -2,6 +2,7 @@
 
 import builtins
 import logging
+import os
 import signal
 import sys
 import time
@@ -33,26 +34,41 @@ logger = logging.getLogger(__name__)
 @click.option(
     "--config",
     "-c",
-    default="config.yaml",
+    default=None,
     help="Path to config file",
-    show_default=True,
+)
+@click.option(
+    "--db",
+    default=None,
+    help="Path to database file",
 )
 @click.pass_context
-def main(ctx, config):
+def main(ctx, config, db):
     """Sync Plex watchlist with Sonarr and Radarr."""
 
     ctx.ensure_object(dict)
 
-    # Store config path for commands that need it
-    ctx.obj["config_path"] = config
+    # Resolve config path: CLI > env var > default
+    config_path = config or os.environ.get("LUMARR_CONFIG", "config.yaml")
+    ctx.obj["config_path"] = config_path
 
     # Don't require config for the 'config' command itself
     if ctx.invoked_subcommand == "config":
         return
 
     try:
-        ctx.obj["config"] = Config(config)
+        ctx.obj["config"] = Config(config_path)
         setup_logging(ctx.obj["config"])
+
+        # Resolve database path: CLI > env var > config > default
+        db_path = (
+            db
+            or os.environ.get("LUMARR_DB")
+            or ctx.obj["config"].get("sync.database")
+            or "./lumarr.db"
+        )
+        ctx.obj["db_path"] = db_path
+
     except ConfigError as e:
         console.print(f"[red]Configuration Error:[/red] {e}")
         console.print(f"\n[cyan]Tip:[/cyan] Run 'lumarr config' to set up your configuration interactively.")
@@ -124,7 +140,7 @@ def sync(ctx, dry_run, force_refresh, follow, ignore_existing, min_rating):
 
     try:
         # Create database first so we can pass it to PlexApi for caching
-        db_path = config.get("sync.database", "./lumarr.db")
+        db_path = ctx.obj["db_path"]
         database = Database(db_path)
         cache_max_age_days = config.get("sync.cache_max_age_days", 7)
         rss_id = config.get("plex.rss_id")
@@ -676,7 +692,7 @@ def sync(ctx, dry_run, force_refresh, follow, ignore_existing, min_rating):
 def history(ctx, limit):
     """Show sync history."""
     config = ctx.obj["config"]
-    db_path = config.get("sync.database", "./lumarr.db")
+    db_path = ctx.obj["db_path"]
 
     if not Path(db_path).exists():
         console.print("[yellow]No sync history found. Run 'lumarr sync' first.[/yellow]")
@@ -724,7 +740,7 @@ def status(ctx):
 
     try:
         # Create database for caching
-        db_path = config.get("sync.database", "./lumarr.db")
+        db_path = ctx.obj["db_path"]
         database = Database(db_path)
         cache_max_age_days = config.get("sync.cache_max_age_days", 7)
         rss_id = config.get("plex.rss_id")
@@ -775,7 +791,7 @@ def status(ctx):
             else:
                 console.print(f"[red]✗[/red] Radarr: Connection failed")
 
-        db_path = config.get("sync.database", "./lumarr.db")
+        db_path = ctx.obj["db_path"]
         if Path(db_path).exists():
             database = Database(db_path)
             records = database.get_sync_history(limit=1000)
@@ -792,8 +808,7 @@ def status(ctx):
 @click.pass_context
 def clear(ctx):
     """Clear sync history database."""
-    config = ctx.obj["config"]
-    db_path = config.get("sync.database", "./plex-watch.db")
+    db_path = ctx.obj["db_path"]
 
     if not Path(db_path).exists():
         console.print("[yellow]No database found.[/yellow]")
@@ -829,7 +844,7 @@ def list(ctx, detailed, debug, force_refresh):
 
     try:
         # Create database for caching
-        db_path = config.get("sync.database", "./lumarr.db")
+        db_path = ctx.obj["db_path"]
         database = Database(db_path)
         cache_max_age_days = config.get("sync.cache_max_age_days", 7)
         rss_id = config.get("plex.rss_id")

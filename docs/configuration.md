@@ -123,7 +123,7 @@ letterboxd:
   - Each page is fetched once; `data-film-id` from `LazyPoster` entries is reused as the TMDB identifier
   - Watchlist items do not include ratings, so `--min-rating` filters apply only to RSS-sourced entries
 
-**Note:** Letterboxd items are automatically synced when you run `lumarr sync` if configured. The `lbox list` command is for viewing items only.
+**Note:** Letterboxd items are automatically synced when you run `lumarr sync` if configured. Use `lumarr list letterboxd` when you only want to preview the inputs.
 
 ### Sync Settings
 
@@ -152,6 +152,29 @@ sync:
 - Baseline items will be skipped
 
 This is useful if you already have a large watchlist and only want to automatically sync new additions going forward.
+
+### Hooks (Optional)
+
+Lumarr can trigger shell commands or HTTP webhooks when key events occur. Configure hooks in `config.yaml` under the `hooks` section:
+
+```yaml
+hooks:
+  sync_complete:
+    - type: command
+      command: "notify-send 'Lumarr sync complete'"
+  sync_error:
+    - type: webhook
+      url: "https://example.com/lumarr/hooks"
+```
+
+Supported events:
+
+- `command_start`: Fired when a command (such as `sync`) begins executing
+- `command_end`: Fired when a command finishes (includes `success` and `error` metadata)
+- `sync_complete`: Fired after a successful `lumarr sync`, with counts for added/skipped items
+- `sync_error`: Fired when `lumarr sync` raises an exception
+
+Hooks are optional—omit the section entirely if you don’t need them. Command hooks execute using your shell, while webhook hooks send a JSON payload via HTTP POST (requires the `requests` library to be installed).
 
 ## Database
 

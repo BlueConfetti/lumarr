@@ -3,9 +3,9 @@
 This repository contains a Python CLI (`lumarr`) that syncs Plex watchlists with Sonarr/Radarr and can also scrape Letterboxd data. Keep these points in mind when working on the project:
 
 ## Working With the CLI
-- The CLI is implemented with Click (`src/lumarr/cli.py`). Always invoke commands through the `lumarr` entry point (or `python -m lumarr.cli …`) so Click performs argument parsing; calling command functions directly will bypass required setup.
-- Configuration defaults are resolved inside helper functions such as `_resolve_letterboxd_usernames()` and `_resolve_letterboxd_watchlists()`. Attempting to inject defaults via `ctx.default_map` proved unreliable with our entry point, so rely on those helpers instead of modifying Click internals.
-- The `lbox` subcommands support `--rss/-r` (watched feed) and `--watchlist/-w` (scraped pages). Both flags accept multiple values, and the corresponding arrays can be set in `config.yaml` under `letterboxd.rss` and `letterboxd.watchlist`.
+- The CLI now lives in a dedicated package under `src/lumarr/cli/` (entry point in `__init__.py` plus `commands/` and `groups/`). Always invoke commands through the `lumarr` entry point (or `python -m lumarr.cli …`) so Click performs argument parsing; calling command functions directly will bypass required setup.
+- Configuration defaults for Letterboxd are resolved via `LetterboxdResolver.resolve_rss_usernames()` / `resolve_watchlist_usernames()`. Attempting to inject defaults via `ctx.default_map` proved unreliable with our entry point, so rely on those helpers instead of modifying Click internals.
+- The `lumarr list letterboxd` subcommand supports `--rss/-r` (watched feed) and `--watchlist/-w` (scraped pages). Both flags accept multiple values, and the corresponding arrays can be set in `config.yaml` under `letterboxd.rss` and `letterboxd.watchlist`.
 
 ## Letterboxd Scraping Behaviour
 - Watchlist scraping relies solely on the HTML returned from `https://letterboxd.com/<username>/watchlist/page/<n>/`. Each `LazyPoster` element already contains:

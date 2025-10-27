@@ -143,7 +143,7 @@ docker run --rm \
 docker run --rm \
   -v $(pwd)/config:/config \
   -v $(pwd)/data:/data \
-  blueconfetti/lumarr lbox list -c /config/config.yaml
+  blueconfetti/lumarr list letterboxd -c /config/config.yaml
 ```
 
 ## Deployment Strategies

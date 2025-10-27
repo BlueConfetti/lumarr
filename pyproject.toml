@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-lumarr = "lumarr.cli:main"
+lumarr = "lumarr.cli:cli"
 
 [tool.setuptools.packages.find]
 where = ["src"]
