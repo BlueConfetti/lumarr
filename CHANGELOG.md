@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.4](https://github.com/BlueConfetti/lumarr/compare/v0.4.3...v0.4.4) (2025-10-27)
+
+
+### Bug Fixes
+
+* docker cmd ([6f3b62e](https://github.com/BlueConfetti/lumarr/commit/6f3b62e4c6c9711dc5701813648fc9f939bc3105))
+* refactor CLI architecture and resolve decorator issues ([16679d0](https://github.com/BlueConfetti/lumarr/commit/16679d0213f0a7935c3bef946785a279c9e4ddbf))
+
 ## [0.4.3](https://github.com/BlueConfetti/lumarr/compare/v0.4.2...v0.4.3) (2025-10-27)
 
 
