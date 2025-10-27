@@ -13,7 +13,7 @@ jobs:
     name: Auto-merge Release Please PR
     runs-on: ubuntu-latest
     if: |
-      github.event.pull_request.user.login == 'github-actions[bot]' &&
+      (github.event.pull_request.user.login == 'github-actions[bot]' || github.event.pull_request.user.login == 'BlueConfetti') &&
       startsWith(github.event.pull_request.title, 'chore(main): release')
     steps:
       - name: Approve PR
