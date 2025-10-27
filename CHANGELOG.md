@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/BlueConfetti/lumarr/compare/v0.4.0...v0.4.1) (2025-10-27)
+
+
+### Bug Fixes
+
+* test auto-merge with patch bump ([40e4cb4](https://github.com/BlueConfetti/lumarr/commit/40e4cb4240116f4d3051ee492452ee33dd4770b0))
+
 ## [0.4.0](https://github.com/BlueConfetti/lumarr/compare/v0.3.0...v0.4.0) (2025-10-25)
 
 
