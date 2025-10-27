@@ -13,14 +13,14 @@ services:
 
     # Environment variables (optional overrides)
     environment:
-      - CONFIG_PATH=/config/config.yaml
-      - DB_PATH=/data/lumarr.db
+      - LUMARR_CONFIG=/config/config.yaml
+      - LUMARR_DB=/data/lumarr.db
       - TZ=America/Los_Angeles  # Set your timezone
 
     # Network mode to access local services (Sonarr/Radarr)
     # Use 'host' if Sonarr/Radarr are running on the same host
     # Or use a custom network if they're in other containers
-    network_mode: bridge
+    # network_mode: bridge
 
     # Command to run
     # Default is --help for testing; replace with actual command for production
@@ -28,7 +28,7 @@ services:
     # command: ["sync", "-c", "/config/config.yaml", "--follow"]
     # One-time sync:
     # command: ["sync", "-c", "/config/config.yaml"]
-    command: ["--help"]
+    command: ["sync","-f"]
 
 # Optional: Custom network for connecting to other containers
 # networks:

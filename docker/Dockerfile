@@ -52,8 +52,8 @@ VOLUME ["/config", "/data"]
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
-    CONFIG_PATH=/config/config.yaml \
-    DB_PATH=/data/lumarr.db
+    LUMARR_CONFIG=/config/config.yaml \
+    LUMARR_DB=/data/lumarr.db
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
