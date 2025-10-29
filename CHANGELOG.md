@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.5](https://github.com/BlueConfetti/lumarr/compare/v0.4.4...v0.4.5) (2025-10-29)
+
+
+### Bug Fixes
+
+* refactor CLI with rich-click and enhance service configuration ([fdbfab6](https://github.com/BlueConfetti/lumarr/commit/fdbfab6d3f29c09072b494d6c65e89ad06e1460f))
+
 ## [0.4.4](https://github.com/BlueConfetti/lumarr/compare/v0.4.3...v0.4.4) (2025-10-27)
 
 
