@@ -1,11 +1,18 @@
-"""Table builders for CLI output."""
+"""Table builders for CLI output.
+
+Following mtm design patterns:
+- Functions named _render_*_table() for consistency
+- Header style: "bold cyan"
+- Primary column (first) styled as "bold"
+- Sorted output where applicable
+"""
 
 from rich.table import Table
 
 from ...models import RequestStatus
 
 
-def create_sync_results_table(results, title="Sync Results"):
+def _render_sync_results_table(results, title="Sync Results"):
     """
     Create table for Plex sync results.
 
@@ -16,12 +23,12 @@ def create_sync_results_table(results, title="Sync Results"):
     Returns:
         Rich Table object
     """
-    table = Table(title=f"\n{title}")
-    table.add_column("Title", style="cyan")
-    table.add_column("Type", style="magenta")
-    table.add_column("Service", style="blue")
-    table.add_column("Status", style="white")
-    table.add_column("Message", style="white")
+    table = Table(title=title, header_style="bold cyan")
+    table.add_column("Title", style="bold")
+    table.add_column("Type")
+    table.add_column("Service")
+    table.add_column("Status")
+    table.add_column("Message")
 
     for result in results:
         status_style = {
@@ -41,7 +48,7 @@ def create_sync_results_table(results, title="Sync Results"):
     return table
 
 
-def create_letterboxd_results_table(results, title="Letterboxd Sync Results"):
+def _render_letterboxd_results_table(results, title="Letterboxd Sync Results"):
     """
     Create table for Letterboxd sync results.
 
@@ -52,12 +59,12 @@ def create_letterboxd_results_table(results, title="Letterboxd Sync Results"):
     Returns:
         Rich Table object
     """
-    table = Table(title=f"\n{title}")
-    table.add_column("Title", style="cyan")
-    table.add_column("Year", style="magenta")
-    table.add_column("Service", style="blue")
-    table.add_column("Status", style="white")
-    table.add_column("Message", style="white")
+    table = Table(title=title, header_style="bold cyan")
+    table.add_column("Title", style="bold")
+    table.add_column("Year")
+    table.add_column("Service")
+    table.add_column("Status")
+    table.add_column("Message")
 
     for result in results:
         status_style = {
@@ -77,7 +84,7 @@ def create_letterboxd_results_table(results, title="Letterboxd Sync Results"):
     return table
 
 
-def create_history_table(records, limit):
+def _render_history_table(records, limit):
     """
     Create table for sync history.
 
@@ -88,12 +95,12 @@ def create_history_table(records, limit):
     Returns:
         Rich Table object
     """
-    table = Table(title=f"Recent Sync History (last {limit} records)")
-    table.add_column("Date", style="cyan")
-    table.add_column("Title", style="white")
-    table.add_column("Type", style="magenta")
-    table.add_column("Service", style="blue")
-    table.add_column("Status", style="white")
+    table = Table(title=f"Recent Sync History (last {limit} records)", header_style="bold cyan")
+    table.add_column("Date", style="bold")
+    table.add_column("Title")
+    table.add_column("Type")
+    table.add_column("Service")
+    table.add_column("Status")
 
     for record in records:
         status_style = {
@@ -115,7 +122,7 @@ def create_history_table(records, limit):
     return table
 
 
-def create_watchlist_table(items, detailed=False):
+def _render_watchlist_table(items, detailed=False):
     """
     Create table for Plex watchlist items.
 
@@ -129,8 +136,8 @@ def create_watchlist_table(items, detailed=False):
     if detailed:
         return None  # Detailed view doesn't use tables
 
-    table = Table(show_header=True, header_style="bold magenta")
-    table.add_column("Title", style="cyan", no_wrap=False, width=30)
+    table = Table(show_header=True, header_style="bold cyan")
+    table.add_column("Title", style="bold", no_wrap=False, width=30)
     table.add_column("Type", style="blue", width=6)
     table.add_column("Year", style="green", width=6)
     table.add_column("Rating", style="yellow", width=8)
@@ -163,7 +170,7 @@ def create_watchlist_table(items, detailed=False):
     return table
 
 
-def create_service_info_table(profiles=None, folders=None, tags=None):
+def _render_service_info_table(profiles=None, folders=None, tags=None):
     """
     Create tables for Sonarr/Radarr service info.
 
@@ -178,8 +185,8 @@ def create_service_info_table(profiles=None, folders=None, tags=None):
     profiles_table = folders_table = tags_table = None
 
     if profiles:
-        profiles_table = Table(show_header=True, header_style="bold magenta")
-        profiles_table.add_column("ID", style="cyan", width=8)
+        profiles_table = Table(show_header=True, header_style="bold cyan")
+        profiles_table.add_column("ID", style="bold", width=8)
         profiles_table.add_column("Name", style="white")
 
         for profile in profiles:
@@ -189,8 +196,8 @@ def create_service_info_table(profiles=None, folders=None, tags=None):
             )
 
     if folders:
-        folders_table = Table(show_header=True, header_style="bold magenta")
-        folders_table.add_column("ID", style="cyan", width=8)
+        folders_table = Table(show_header=True, header_style="bold cyan")
+        folders_table.add_column("ID", style="bold", width=8)
         folders_table.add_column("Path", style="white")
         folders_table.add_column("Free Space", style="green")
 
@@ -205,8 +212,8 @@ def create_service_info_table(profiles=None, folders=None, tags=None):
             )
 
     if tags:
-        tags_table = Table(show_header=True, header_style="bold magenta")
-        tags_table.add_column("ID", style="cyan", width=8)
+        tags_table = Table(show_header=True, header_style="bold cyan")
+        tags_table.add_column("ID", style="bold", width=8)
         tags_table.add_column("Label", style="white")
 
         for tag in tags:

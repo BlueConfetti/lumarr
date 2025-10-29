@@ -3,9 +3,14 @@
 from functools import wraps
 import sys
 
-import click
+import rich_click as click
 
-from ..display.console import console
+from ..commands.common import (
+    console,
+    print_connection_test,
+    print_connection_success,
+    print_connection_failure,
+)
 from .exceptions import ConnectionError
 
 
@@ -41,7 +46,7 @@ def with_database(f):
         from ..services.database import DatabaseService
 
         with DatabaseService(ctx.obj.db_path) as database:
-            return f(ctx, database=database, **kwargs)
+            return f(database=database, **kwargs)
     return wrapper
 
 
@@ -60,7 +65,7 @@ def with_plex(f):
         from ..services.plex import PlexService
         from ..services.database import DatabaseService
 
-        console.print("[cyan]Testing Plex connection...[/cyan]")
+        print_connection_test("Plex")
 
         # Create database and Plex service in nested context managers
         with DatabaseService(ctx.obj.db_path) as database:
@@ -68,10 +73,10 @@ def with_plex(f):
 
             with plex_service as plex:
                 if not plex.ping():
-                    console.print("[red]Failed to connect to Plex. Check your token.[/red]")
+                    print_connection_failure("Plex", "Check your token in config.yaml")
                     sys.exit(1)
 
-                console.print("[green]✓[/green] Plex connection successful\n")
+                print_connection_success("Plex")
                 return f(ctx, plex=plex, **kwargs)
     return wrapper
 
@@ -97,20 +102,20 @@ def with_sonarr(optional=False):
             if not ctx.obj.config.get("sonarr.enabled", False):
                 if optional:
                     return f(ctx, sonarr=None, **kwargs)
-                console.print("[red]Sonarr is not enabled in configuration.[/red]")
+                print_connection_failure("Sonarr", "Enable Sonarr in config.yaml")
                 sys.exit(1)
 
-            console.print("[cyan]Testing Sonarr connection...[/cyan]")
+            print_connection_test("Sonarr")
             sonarr_service = SonarrService.from_config(ctx.obj.config)
 
             with sonarr_service as sonarr:
                 if not sonarr.test_connection():
-                    console.print("[red]Failed to connect to Sonarr. Check your URL and API key.[/red]")
+                    print_connection_failure("Sonarr", "Check your URL and API key in config.yaml")
                     if not optional:
                         sys.exit(1)
                     return f(ctx, sonarr=None, **kwargs)
 
-                console.print("[green]✓[/green] Sonarr connection successful\n")
+                print_connection_success("Sonarr")
                 return f(ctx, sonarr=sonarr, **kwargs)
         return wrapper
     return decorator
@@ -137,20 +142,20 @@ def with_radarr(optional=False):
             if not ctx.obj.config.get("radarr.enabled", False):
                 if optional:
                     return f(ctx, radarr=None, **kwargs)
-                console.print("[red]Radarr is not enabled in configuration.[/red]")
+                print_connection_failure("Radarr", "Enable Radarr in config.yaml")
                 sys.exit(1)
 
-            console.print("[cyan]Testing Radarr connection...[/cyan]")
+            print_connection_test("Radarr")
             radarr_service = RadarrService.from_config(ctx.obj.config)
 
             with radarr_service as radarr:
                 if not radarr.test_connection():
-                    console.print("[red]Failed to connect to Radarr. Check your URL and API key.[/red]")
+                    print_connection_failure("Radarr", "Check your URL and API key in config.yaml")
                     if not optional:
                         sys.exit(1)
                     return f(ctx, radarr=None, **kwargs)
 
-                console.print("[green]✓[/green] Radarr connection successful\n")
+                print_connection_success("Radarr")
                 return f(ctx, radarr=radarr, **kwargs)
         return wrapper
     return decorator
@@ -178,12 +183,12 @@ def with_tmdb(optional=True):
             if not tmdb_key:
                 if optional:
                     return f(ctx, tmdb=None, **kwargs)
-                console.print("[red]TMDB API key not configured.[/red]")
+                print_connection_failure("TMDB", "Add tmdb.api_key to config.yaml")
                 sys.exit(1)
 
             tmdb = TmdbApi(api_key=tmdb_key)
             if tmdb.is_configured():
-                console.print("[green]✓[/green] TMDB API configured\n")
+                print_connection_success("TMDB")
 
             return f(ctx, tmdb=tmdb, **kwargs)
         return wrapper

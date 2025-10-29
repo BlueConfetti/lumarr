@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-import click
+import rich_click as click
 
 from ..core import with_database
 from ..display import console

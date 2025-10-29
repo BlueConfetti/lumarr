@@ -9,7 +9,7 @@ description = "CLI tool to sync Plex watchlist with Sonarr and Radarr"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "click>=8.1.0",
+    "rich-click>=1.7.0",
     "requests>=2.31.0",
     "pyyaml>=6.0",
     "rich>=13.0.0",

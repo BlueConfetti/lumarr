@@ -2,10 +2,11 @@
 
 import sys
 
-import click
+import rich_click as click
 
 from ...api.radarr import RadarrApi, RadarrApiError
-from ..display import console, create_service_info_table
+from ..commands.common import normalize_service_url
+from ..display import console, _render_service_info_table
 
 
 @click.group('radarr')
@@ -38,6 +39,9 @@ def radarr_info(ctx, url, api_key):
         )
         sys.exit(1)
 
+    # Normalize URL to handle formats like "192.168.2.2:4019"
+    radarr_url = normalize_service_url(radarr_url)
+
     try:
         radarr_api = RadarrApi(
             url=radarr_url,
@@ -58,7 +62,7 @@ def radarr_info(ctx, url, api_key):
         console.print("[bold cyan]Quality Profiles[/bold cyan]")
         console.print("[dim]Use these IDs for the 'quality_profile' setting in config.yaml[/dim]\n")
 
-        profiles_table, _, _ = create_service_info_table(profiles=quality_profiles)
+        profiles_table, _, _ = _render_service_info_table(profiles=quality_profiles)
         if profiles_table:
             console.print(profiles_table)
         else:
@@ -71,7 +75,7 @@ def radarr_info(ctx, url, api_key):
         console.print("[bold cyan]Root Folders[/bold cyan]")
         console.print("[dim]Use these paths for the 'root_folder' setting in config.yaml[/dim]\n")
 
-        _, folders_table, _ = create_service_info_table(folders=root_folders)
+        _, folders_table, _ = _render_service_info_table(folders=root_folders)
         if folders_table:
             console.print(folders_table)
         else:
@@ -85,7 +89,7 @@ def radarr_info(ctx, url, api_key):
             console.print("[bold cyan]Tags[/bold cyan]")
             console.print("[dim]Available tags for advanced configuration[/dim]\n")
 
-            _, _, tags_table = create_service_info_table(tags=tags)
+            _, _, tags_table = _render_service_info_table(tags=tags)
             if tags_table:
                 console.print(tags_table)
             console.print()

@@ -1,6 +1,6 @@
 """Sync command - main synchronization functionality."""
 
-import click
+import rich_click as click
 
 from ...models import RequestStatus
 from ..core import with_database, with_plex, with_sonarr, with_radarr, with_tmdb, with_letterboxd, trigger_hook

@@ -4,7 +4,8 @@ import importlib
 import os
 from typing import Optional
 
-import click
+import rich_click as click
+from rich_click import RichGroup
 
 
 class LazyCommandGroup(click.Group):
@@ -151,13 +152,13 @@ def _store_global_option(ctx, param, value):
             root_ctx.params[param.name] = value
 
 
-class LumarrGroup(LazyCommandGroup, AliasedGroup):
+class LumarrGroup(LazyCommandGroup, AliasedGroup, RichGroup):
     """
     Combined group with lazy loading, aliases, and global options support.
 
     This is the main group class used for the Lumarr CLI,
-    combining lazy command loading, command aliases, and global options
-    that can be used at any position with any subcommand.
+    combining lazy command loading, command aliases, global options,
+    and rich-click formatting for beautiful help output.
     """
 
     # Define global options that will be available on all subcommands
@@ -221,88 +222,7 @@ class LumarrGroup(LazyCommandGroup, AliasedGroup):
                 # Insert at beginning so they appear after command-specific options in help
                 cmd.params.insert(0, global_opt)
 
-        # Override the command's format_help to separate global options
-        original_format_help = cmd.format_help
-
-        def custom_format_help(ctx, formatter):
-            # Temporarily remove global options from params
-            global_params = []
-            regular_params = []
-
-            for param in cmd.params:
-                is_global = any(param.name == opt.name for opt in self.GLOBAL_OPTIONS)
-                if is_global:
-                    global_params.append(param)
-                else:
-                    regular_params.append(param)
-
-            # Store original params and replace with regular params only
-            original_params = cmd.params
-            cmd.params = regular_params
-
-            # Format with regular params only
-            original_format_help(ctx, formatter)
-
-            # Restore original params
-            cmd.params = original_params
-
-            # Now format global options separately
-            if global_params:
-                opts = []
-                for param in global_params:
-                    rv = param.get_help_record(ctx)
-                    if rv is not None:
-                        opts.append(rv)
-
-                if opts:
-                    with formatter.section('Global Options'):
-                        formatter.write_dl(opts)
-
-        cmd.format_help = custom_format_help
+        # RichGroup handles formatting automatically - no need to override
         return cmd
 
-    def format_help(self, ctx, formatter):
-        """
-        Format help with commands shown and global options at the bottom.
-        """
-        self.format_usage(ctx, formatter)
-        self.format_help_text(ctx, formatter)
-        self.format_options(ctx, formatter)
-        self.format_commands(ctx, formatter)  # Make sure commands are shown
-        self.format_epilog(ctx, formatter)
-
-    def format_commands(self, ctx, formatter):
-        """Format commands with aliases."""
-        return AliasedGroup.format_commands(self, ctx, formatter)
-
-    def format_options(self, ctx, formatter):
-        """
-        Format options with global options shown separately at the bottom.
-
-        Separates local options from global options in help output.
-        """
-        opts = []
-        global_opts = []
-
-        for param in self.get_params(ctx):
-            rv = param.get_help_record(ctx)
-            if rv is not None:
-                # Check if this is a global option
-                is_global = any(
-                    param.name == opt.name for opt in self.GLOBAL_OPTIONS
-                )
-
-                if is_global:
-                    global_opts.append(rv)
-                else:
-                    opts.append(rv)
-
-        # Write local options first
-        if opts:
-            with formatter.section('Options'):
-                formatter.write_dl(opts)
-
-        # Write global options at the bottom
-        if global_opts:
-            with formatter.section('Global Options'):
-                formatter.write_dl(global_opts)
+    # Let RichGroup handle formatting - it provides beautiful output by default

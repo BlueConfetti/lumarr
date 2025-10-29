@@ -2,7 +2,7 @@
 
 import sys
 
-import click
+import rich_click as click
 
 from ...config_wizard import ConfigWizard
 from ..display import console

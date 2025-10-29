@@ -2,12 +2,13 @@
 
 import sys
 
-import click
+import rich_click as click
+from rich.status import Status
 from rich.table import Table
 
 from ...api.letterboxd import LetterboxdApi, LetterboxdApiError
 from ..core import with_database, with_plex
-from ..display import console, create_watchlist_table
+from ..display import console, _render_watchlist_table
 
 
 @click.group('list', invoke_without_command=True)
@@ -58,8 +59,8 @@ def list_group(ctx):
 @with_database
 def list_plex(ctx, database, plex, detailed, force_refresh):
     """List Plex watchlist items."""
-    console.print("[cyan]Fetching watchlist (this may take a moment)...[/cyan]")
-    watchlist = plex.get_watchlist(force_refresh=force_refresh)
+    with console.status("[cyan]Fetching Plex watchlist...[/cyan]", spinner="dots"):
+        watchlist = plex.get_watchlist(force_refresh=force_refresh)
 
     if not watchlist:
         console.print("[yellow]Your watchlist is empty.[/yellow]")
@@ -94,7 +95,7 @@ def list_plex(ctx, database, plex, detailed, force_refresh):
 
             console.print()
     else:
-        table = create_watchlist_table(watchlist, detailed=False)
+        table = _render_watchlist_table(watchlist, detailed=False)
         console.print(table)
 
 
@@ -159,16 +160,18 @@ def list_letterboxd(ctx, rss_usernames, watchlist_usernames, min_rating, detaile
         items = []
 
         if rss_names:
-            console.print(
-                f"[cyan]Fetching watched movies from Letterboxd RSS for: {', '.join(rss_names)}...[/cyan]"
-            )
-            items.extend(letterboxd.get_watched_movies(rss_names))
+            with console.status(
+                f"[cyan]Fetching watched movies from Letterboxd RSS for {', '.join(rss_names)}...[/cyan]",
+                spinner="dots"
+            ):
+                items.extend(letterboxd.get_watched_movies(rss_names))
 
         if watchlist_names:
-            console.print(
-                f"[cyan]Fetching watchlist movies from Letterboxd for: {', '.join(watchlist_names)}...[/cyan]"
-            )
-            items.extend(letterboxd.get_watchlist_movies(watchlist_names))
+            with console.status(
+                f"[cyan]Fetching watchlist movies from Letterboxd for {', '.join(watchlist_names)}...[/cyan]",
+                spinner="dots"
+            ):
+                items.extend(letterboxd.get_watchlist_movies(watchlist_names))
 
         if not items:
             console.print("[yellow]No movies found.[/yellow]")

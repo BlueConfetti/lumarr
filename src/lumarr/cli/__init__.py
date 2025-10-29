@@ -3,7 +3,15 @@
 import os
 import sys
 
-import click
+# Configure rich-click BEFORE importing click
+import rich_click as click
+from rich_click import RichGroup
+
+# Enable rich-click formatting
+click.rich_click.USE_RICH_MARKUP = True
+click.rich_click.SHOW_ARGUMENTS = True
+click.rich_click.GROUP_ARGUMENTS_OPTIONS = True
+click.rich_click.MAX_WIDTH = 100
 
 from .. import __version__
 from ..config import ConfigError, setup_logging

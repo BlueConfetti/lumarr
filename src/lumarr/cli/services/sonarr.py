@@ -1,6 +1,7 @@
 """Sonarr API service wrapper."""
 
 from ...api.sonarr import SonarrApi
+from ..commands.common import normalize_service_url
 
 
 class SonarrService:
@@ -30,8 +31,12 @@ class SonarrService:
         Returns:
             SonarrService instance
         """
+        # Normalize URL to handle formats like "192.168.2.2:4019"
+        raw_url = config.get("sonarr.url")
+        normalized_url = normalize_service_url(raw_url)
+
         api = SonarrApi(
-            url=config.get("sonarr.url"),
+            url=normalized_url,
             api_key=config.get("sonarr.api_key"),
             quality_profile=config.get("sonarr.quality_profile", 1),
             root_folder=config.get("sonarr.root_folder"),

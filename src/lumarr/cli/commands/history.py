@@ -2,10 +2,10 @@
 
 from pathlib import Path
 
-import click
+import rich_click as click
 
 from ..core import with_database
-from ..display import console, create_history_table
+from ..display import console, _render_history_table
 
 
 @click.command()
@@ -31,7 +31,7 @@ def history(database, limit):
         console.print("[yellow]No sync history found.[/yellow]")
         return
 
-    table = create_history_table(records, limit)
+    table = _render_history_table(records, limit)
     console.print(table)
 
 

@@ -52,7 +52,12 @@ sonarr:
   # Enable Sonarr integration
   enabled: true
 
-  # Sonarr URL (include http:// or https://)
+  # Sonarr URL
+  # Supports multiple formats:
+  #   - Full URL: http://localhost:8989 or https://sonarr.example.com
+  #   - Host:Port: localhost:8989 or 192.168.2.2:4019
+  #   - Docker: host.docker.internal:8989
+  # If protocol is omitted, http:// will be added automatically
   url: "http://localhost:8989"
 
   # Sonarr API key
@@ -78,7 +83,12 @@ radarr:
   # Enable Radarr integration
   enabled: true
 
-  # Radarr URL (include http:// or https://)
+  # Radarr URL
+  # Supports multiple formats:
+  #   - Full URL: http://localhost:7878 or https://radarr.example.com
+  #   - Host:Port: localhost:7878 or 192.168.2.2:4019
+  #   - Docker: host.docker.internal:7878
+  # If protocol is omitted, http:// will be added automatically
   url: "http://localhost:7878"
 
   # Radarr API key

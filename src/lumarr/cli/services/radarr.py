@@ -1,6 +1,7 @@
 """Radarr API service wrapper."""
 
 from ...api.radarr import RadarrApi
+from ..commands.common import normalize_service_url
 
 
 class RadarrService:
@@ -30,8 +31,12 @@ class RadarrService:
         Returns:
             RadarrService instance
         """
+        # Normalize URL to handle formats like "192.168.2.2:4019"
+        raw_url = config.get("radarr.url")
+        normalized_url = normalize_service_url(raw_url)
+
         api = RadarrApi(
-            url=config.get("radarr.url"),
+            url=normalized_url,
             api_key=config.get("radarr.api_key"),
             quality_profile=config.get("radarr.quality_profile", 1),
             root_folder=config.get("radarr.root_folder"),

@@ -1,6 +1,9 @@
-"""Shared console instance for rich output."""
+"""Shared console instance for rich output.
 
-from rich.console import Console
+This module re-exports the console from commands.common for backward compatibility.
+New code should import directly from commands.common.
+"""
 
-# Shared console instance used throughout the CLI
-console = Console()
+from ..commands.common import console
+
+__all__ = ["console"]

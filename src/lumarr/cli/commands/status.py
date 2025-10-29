@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-import click
+import rich_click as click
 
 from ..core import with_database, with_plex, with_sonarr, with_radarr
 from ..display import console
