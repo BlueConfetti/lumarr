@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.6](https://github.com/BlueConfetti/lumarr/compare/v0.4.5...v0.4.6) (2025-11-01)
+
+
+### Bug Fixes
+
+* improve error handling and add HTTP retry logic ([e4934c7](https://github.com/BlueConfetti/lumarr/commit/e4934c70d0dc16bc88ce46ed5c780378e5781e6d))
+
 ## [0.4.5](https://github.com/BlueConfetti/lumarr/compare/v0.4.4...v0.4.5) (2025-10-29)
 
 
