@@ -4,6 +4,8 @@ import logging
 import re
 import xml.etree.ElementTree as ET
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from typing import TYPE_CHECKING, Optional
 
 from ..models import MediaType, ProviderId, WatchlistItem
@@ -49,7 +51,31 @@ class PlexApi:
         self.database = database
         self.cache_max_age_days = cache_max_age_days
         self.rss_id = rss_id
-        self.session = requests.Session()
+        self.session = self._create_session_with_retries()
+
+    def _create_session_with_retries(self) -> requests.Session:
+        """Create a requests session with automatic retry logic.
+
+        Returns:
+            Session configured with retry adapter
+        """
+        session = requests.Session()
+
+        # Configure retry strategy
+        retry_strategy = Retry(
+            total=3,  # Maximum number of retries
+            backoff_factor=1,  # Wait 1, 2, 4 seconds between retries
+            status_forcelist=[429, 500, 502, 503, 504],  # Retry on these HTTP status codes
+            allowed_methods=["GET"],  # Only retry GET requests
+            raise_on_status=False,  # Don't raise exception on final failure
+        )
+
+        # Mount adapter for both HTTP and HTTPS
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
+
+        return session
 
     def _get_headers(self) -> dict:
         """Get headers for Plex API requests.
@@ -186,7 +212,20 @@ class PlexApi:
             return items
 
         except requests.RequestException as e:
-            raise PlexApiError(f"Failed to fetch watchlist: {e}")
+            # Format error message to be more user-friendly
+            error_msg = "Failed to fetch watchlist"
+            if isinstance(e, requests.exceptions.ConnectionError):
+                error_msg += ": Connection error (check network connectivity)"
+            elif isinstance(e, requests.exceptions.Timeout):
+                error_msg += ": Request timeout"
+            elif isinstance(e, requests.exceptions.HTTPError):
+                status = getattr(e.response, 'status_code', 'unknown')
+                error_msg += f": HTTP {status}"
+            else:
+                error_msg += f": {str(e).split(':')[0]}"  # Get first part of error message
+
+            logger.debug(f"Detailed error: {e}", exc_info=True)
+            raise PlexApiError(error_msg)
 
     def _fetch_with_cache(self, rating_keys: list[str]) -> dict[str, dict]:
         """Fetch metadata using cache when possible.
@@ -422,9 +461,23 @@ class PlexApi:
             return items
 
         except requests.RequestException as e:
-            raise PlexApiError(f"Failed to fetch RSS feed: {e}")
+            # Format error message to be more user-friendly
+            error_msg = "Failed to fetch RSS feed"
+            if isinstance(e, requests.exceptions.ConnectionError):
+                error_msg += ": Connection error (check network connectivity)"
+            elif isinstance(e, requests.exceptions.Timeout):
+                error_msg += ": Request timeout"
+            elif isinstance(e, requests.exceptions.HTTPError):
+                status = getattr(e.response, 'status_code', 'unknown')
+                error_msg += f": HTTP {status}"
+            else:
+                error_msg += f": {str(e).split(':')[0]}"
+
+            logger.debug(f"Detailed error: {e}", exc_info=True)
+            raise PlexApiError(error_msg)
         except ET.ParseError as e:
-            raise PlexApiError(f"Failed to parse RSS feed: {e}")
+            logger.debug(f"Detailed parse error: {e}", exc_info=True)
+            raise PlexApiError("Failed to parse RSS feed: Invalid XML format")
 
     def _parse_rss_item(self, item_elem: ET.Element, namespaces: dict) -> Optional[WatchlistItem]:
         """Parse a single RSS item into WatchlistItem.

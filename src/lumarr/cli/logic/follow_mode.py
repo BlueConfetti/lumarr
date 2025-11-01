@@ -15,6 +15,47 @@ from .sync_manager import SyncManager
 logger = logging.getLogger(__name__)
 
 
+def _format_error_message(error: Exception) -> str:
+    """Format an error message for user display, hiding technical details.
+
+    Args:
+        error: Exception to format
+
+    Returns:
+        User-friendly error message
+    """
+    import requests
+
+    error_str = str(error)
+
+    # Handle connection errors
+    if isinstance(error, (requests.exceptions.ConnectionError, ConnectionError)):
+        if "RemoteDisconnected" in error_str or "Connection aborted" in error_str:
+            return "Connection lost (remote server closed connection). Will retry on next sync."
+        elif "timeout" in error_str.lower():
+            return "Connection timeout. Will retry on next sync."
+        else:
+            return "Connection error. Will retry on next sync."
+
+    # Handle timeout errors
+    if isinstance(error, requests.exceptions.Timeout):
+        return "Request timeout. Will retry on next sync."
+
+    # Handle HTTP errors
+    if isinstance(error, requests.exceptions.HTTPError):
+        return f"HTTP error: {error.response.status_code if hasattr(error, 'response') else 'unknown'}"
+
+    # For other errors, try to extract just the message without nested exception details
+    if "PlexApiError" in error_str or "LetterboxdApiError" in error_str:
+        # Extract the message after the colon
+        parts = error_str.split(":", 1)
+        if len(parts) > 1:
+            return parts[1].strip()
+
+    # Default: return the string representation
+    return error_str
+
+
 def run_follow_mode(
     config,
     database,
@@ -100,8 +141,8 @@ def run_follow_mode(
             show_full_output=True,
         )
     except Exception as e:
-        console.print(f"[red]Error during initial sync:[/red] {e}")
-        logger.exception("Error in initial sync")
+        console.print(f"[red]Error during initial sync:[/red] {_format_error_message(e)}")
+        logger.debug("Error in initial sync", exc_info=True)
 
     console.print(f"\n[dim]Monitoring for new items... (Ctrl+C to stop)[/dim]\n")
 
@@ -131,8 +172,8 @@ def run_follow_mode(
                                 f"(Plex) → {result.target_service}"
                             )
             except Exception as e:
-                console.print(f"\r\033[K[red]Error checking Plex:[/red] {e}")
-                logger.exception("Error in Plex sync")
+                console.print(f"\r\033[K[red]Error checking Plex:[/red] {_format_error_message(e)}")
+                logger.debug("Error in Plex sync", exc_info=True)
 
         # Check if Letterboxd needs syncing
         if has_letterboxd and current_time - last_lbox_sync >= lbox_interval:
@@ -160,8 +201,8 @@ def run_follow_mode(
                                 f"(Letterboxd) → radarr"
                             )
             except Exception as e:
-                console.print(f"\r\033[K[red]Error checking Letterboxd:[/red] {e}")
-                logger.exception("Error in Letterboxd sync")
+                console.print(f"\r\033[K[red]Error checking Letterboxd:[/red] {_format_error_message(e)}")
+                logger.debug("Error in Letterboxd sync", exc_info=True)
 
         # Update status line
         if not shutdown_requested:

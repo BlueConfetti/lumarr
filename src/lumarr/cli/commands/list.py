@@ -13,7 +13,8 @@ from ..display import console, _render_watchlist_table
 
 @click.group('list', invoke_without_command=True)
 @click.pass_context
-def list_group(ctx):
+@with_database
+def list_group(ctx, database):
     """List items from Plex watchlist and Letterboxd.
 
     By default, shows both Plex and Letterboxd items. Use subcommands to show only one source.
@@ -37,9 +38,14 @@ def list_group(ctx):
                 min_rating=None,
                 detailed=False,
             )
-        except Exception:
-            # Silently skip if Letterboxd not configured
+        except SystemExit:
+            # SystemExit means command intentionally exited (not configured)
             console.print("[dim]Not configured (set letterboxd.rss or letterboxd.watchlist in config.yaml)[/dim]")
+        except Exception as e:
+            # Show the actual error for debugging
+            console.print(f"[red]Letterboxd Error:[/red] {e}")
+            import logging
+            logging.getLogger(__name__).debug("Letterboxd list error", exc_info=True)
 
 
 @list_group.command('plex')
@@ -128,7 +134,8 @@ def list_plex(ctx, database, plex, detailed, force_refresh):
     help="Show detailed information",
 )
 @click.pass_context
-def list_letterboxd(ctx, rss_usernames, watchlist_usernames, min_rating, detailed):
+@with_database
+def list_letterboxd(ctx, database, rss_usernames, watchlist_usernames, min_rating, detailed):
     """List movies from Letterboxd."""
     from ..services.letterboxd import LetterboxdResolver
 
@@ -172,6 +179,13 @@ def list_letterboxd(ctx, rss_usernames, watchlist_usernames, min_rating, detaile
                 spinner="dots"
             ):
                 items.extend(letterboxd.get_watchlist_movies(watchlist_names))
+
+        # Enrich watchlist items with cached TMDB IDs from database
+        for item in items:
+            if item.letterboxd_id and not item.provider_ids.tmdb_id:
+                cached = database.get_letterboxd_metadata(item.letterboxd_id)
+                if cached and cached.get("tmdb_id"):
+                    item.provider_ids.tmdb_id = cached["tmdb_id"]
 
         if not items:
             console.print("[yellow]No movies found.[/yellow]")

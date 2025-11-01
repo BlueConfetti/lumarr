@@ -17,7 +17,7 @@ from ..display import console, _render_history_table
     show_default=True,
 )
 @with_database
-def history(database, limit):
+def history(ctx, database, limit):
     """Show sync history."""
     db_path = Path(database.db_path) if hasattr(database, 'db_path') else None
 

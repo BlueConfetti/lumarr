@@ -11,7 +11,7 @@ from ..display import console
 @click.command()
 @click.confirmation_option(prompt="Are you sure you want to clear all sync history?")
 @with_database
-def clear(database):
+def clear(ctx, database):
     """Clear sync history database."""
     database.clear_history()
     console.print("[green]✓[/green] Sync history cleared")

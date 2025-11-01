@@ -37,7 +37,7 @@ def with_database(f):
 
     Usage:
         @with_database
-        def command(database, ...):
+        def command(ctx, database, ...):
             pass
     """
     @wraps(f)
@@ -46,7 +46,7 @@ def with_database(f):
         from ..services.database import DatabaseService
 
         with DatabaseService(ctx.obj.db_path) as database:
-            return f(database=database, **kwargs)
+            return f(ctx, database=database, **kwargs)
     return wrapper
 
 
